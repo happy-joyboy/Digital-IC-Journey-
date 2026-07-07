@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verilog for MIPS Architects</title>
+    
+    <!-- PrismJS for Syntax Highlighting (Dark Theme) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    
+    <style>
+        :root {
+            --sl-red: #ff2a2a;
+            --sl-red-glow: rgba(255, 42, 42, 0.4);
+            --sl-blue: #55aaff;
+            --sl-bg-dark: rgba(10, 12, 16, 0.85);
+            --text-main: #e0e5ec;
+            --text-muted: #9ba1a6;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-main);
+            background-color: #050508;
+            /* Ensure the image is in the same directory as this HTML file.
+               If you rename the image, update the URL below! 
+            */
+            background-image: url('ChatGPT Image Jul 7, 2026, 05_45_55 AM.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            line-height: 1.6;
+        }
+
+        /* Glassmorphism Container */
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 40px 60px;
+            background: var(--sl-bg-dark);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 42, 42, 0.2);
+            border-left: 3px solid var(--sl-red);
+            border-right: 3px solid var(--sl-blue);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 
+                        0 0 20px var(--sl-red-glow);
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+        }
+
+        h1 {
+            color: var(--sl-red);
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid rgba(255, 42, 42, 0.3);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        h2 {
+            color: var(--sl-blue);
+            font-size: 1.8rem;
+            border-bottom: 1px solid rgba(85, 170, 255, 0.2);
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #ffffff;
+            font-size: 1.3rem;
+        }
+
+        p {
+            margin-bottom: 1.2em;
+            font-size: 1.05rem;
+        }
+
+        strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Lists */
+        ul {
+            background: rgba(0,0,0,0.2);
+            padding: 20px 20px 20px 40px;
+            border-radius: 8px;
+            border-left: 2px solid var(--text-muted);
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Code & Syntax Highlighting Overrides */
+        code:not([class*="language-"]) {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ff9d9d;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre[class*="language-"] {
+            background: #111116 !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            margin: 1.5em 0;
+        }
+
+        /* ASCII Diagrams */
+        .diagram {
+            background: #0a0a0f;
+            color: #55aaff;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            white-space: pre;
+            overflow-x: auto;
+            border: 1px dashed rgba(85, 170, 255, 0.3);
+        }
+
+        /* Tables for Truth Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px 0;
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 10px 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        th {
+            background: rgba(255, 42, 42, 0.1);
+            color: var(--sl-red);
+            text-transform: uppercase;
+        }
+
+        /* Alert/Danger block */
+        .danger {
+            background: rgba(255, 42, 42, 0.1);
+            border-left: 4px solid var(--sl-red);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .danger strong {
+            color: var(--sl-red);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Verilog for MIPS Architects</h1>
+    
+    <p>Since you're coming from MIPS and computer organization, I'd teach Verilog differently than I would teach someone who has never seen hardware.</p>
+    <p>You already know:</p>
+    <ul>
+        <li>CPU
+            <ul>
+                <li>Registers</li>
+                <li>ALU</li>
+                <li>Control Unit</li>
+                <li>Memory</li>
+                <li>Clock</li>
+            </ul>
+        </li>
+    </ul>
+    <p><strong>Verilog is how we describe those pieces.</strong></p>
+
+    <h2>Rule #1: A Verilog Module = A Hardware Block</h2>
+    <p>Think of a module as a function, except it becomes hardware.</p>
+
+<pre><code class="language-verilog">module adder(
+    input [3:0] a, // 4-bit
+    input [3:0] b, // 4-bit
+    output [4:0] sum  // 5-bit
+);
+
+assign sum = a + b;
+
+endmodule</code></pre>
+
+    <h3>Diagram:</h3>
+    <div class="diagram">
+      +-------+
+a --->|       |
+      | Adder |----> sum
+b --->|       |
+      +-------+</div>
+
+    <p><strong>Example:</strong><br>
+    <code>a = 0101 (5)</code><br>
+    <code>b = 0011 (3)</code><br>
+    <code>sum = 01000 (8)</code></p>
+
+    <h2>Rule #2: Wires Carry Signals</h2>
+    <p>Imagine physical copper wires.</p>
+    <p><code>wire x;</code> or<br>
+    <code>wire [7:0] data;</code> --&gt; 8-bit wire:</p>
+    <div class="diagram">
+data[7]
+data[6]
+...
+data[0]</div>
+
+    <h2>Rule #3: <code>assign</code> Means Continuous Connection</h2>
+    <p><strong>Example:</strong></p>
+    <pre><code class="language-verilog">assign y = a & b;</code></pre>
+    
+    <h3>Hardware:</h3>
+    <div class="diagram">
+a ----\
+       AND ---- y
+b ----/</div>
+    <p>Whenever A or B changes:<br>
+    A=1 B=1 &rarr; Y=1<br>
+    A=1 B=0 &rarr; Y=0<br>
+    <strong>No CPU is running. The circuit simply exists.</strong></p>
+
+    <h2>Rule #4: Data Types — <code>wire</code> vs <code>reg</code> (and why it confuses everyone)</h2>
+    <p>This trips up almost everyone coming from software.</p>
+    <ul>
+        <li><code>wire</code> -&gt; a physical connection. Cannot store a value.</li>
+        <li><code>reg</code> -&gt; a variable that HOLDS a value between assignments.</li>
+    </ul>
+    <p><code>reg</code> does <strong>NOT</strong> mean "this becomes a register" in hardware. It just means "this is assigned inside an always block."</p>
+
+<pre><code class="language-verilog">wire w;        // driven by assign
+reg  r;        // driven inside always @(...)</code></pre>
+
+    <p>Whether <code>reg</code> becomes an actual flip-flop or stays plain wires depends on how you write the always block, not on the keyword itself. This is Rule #7 below — it's the single most important rule in the whole language.</p>
+    
+    <p>Other types you'll see:</p>
+    <ul>
+        <li><code>integer</code> -&gt; 32-bit signed, used in loops/testbenches</li>
+        <li><code>real</code> -&gt; simulation only, not synthesizable</li>
+        <li><code>time</code> -&gt; simulation only</li>
+    </ul>
+
+    <h2>Rule #5: Blocking (<code>=</code>) vs Non-Blocking (<code>&lt;=</code>)</h2>
+    <p>Here's a rule you'll rely on constantly:</p>
+
+<pre><code class="language-verilog">// Blocking — executes in ORDER, like normal code
+always @(*)
+begin
+    y = a & b;
+    z = y | c;      // sees the NEW value of y
+end
+
+// Non-blocking — all RHS evaluated first, THEN assigned together
+always @(posedge clk)
+begin
+    q1 <= d;
+    q2 <= q1;       // sees the OLD value of q1, not the new one
+end</code></pre>
+
+    <div class="danger">
+        <strong>The rule everyone must memorize:</strong><br>
+        Combinational logic : <code>(always @(*))</code> -&gt; use blocking <code>(=)</code><br>
+        Sequential logic : <code>(always @(posedge))</code> -&gt; use non-blocking <code>(&lt;=)</code><br><br>
+        Mixing them wrong is the #1 cause of simulation-vs-synthesis mismatches.
+    </div>
+
+    <h2>Rule #6: <code>always @(*)</code> for Combinational Logic</h2>
+    <p>You've seen <code>assign</code> for combinational logic. There's a second way:</p>
+
+<pre><code class="language-verilog">always @(*)
+begin
+    if(sel)
+        out = b;
+    else
+        out = a;
+end</code></pre>
+    <p><code>@(*)</code> means "re-evaluate whenever any input on the right-hand side changes." Same idea as assign, just usable with if/case instead of only ternary expressions.</p>
+
+    <div class="danger">
+        <strong>⚠️ Danger — Inferred Latches:</strong>
+<pre><code class="language-verilog">always @(*)
+begin
+    if(sel)
+        out = a;
+    // no else! -> out holds its OLD value when sel=0
+    // this SYNTHESIZES A LATCH, probably not what you wanted
+end</code></pre>
+        Rule of thumb: every combinational always block must assign every output on every path. <strong>Always have an else.</strong>
+    </div>
+
+    <h2>Rule #7: Blocking Style Decides What Hardware You Get</h2>
+    <p>This is the deepest rule in the whole language.</p>
+    <ul>
+        <li><code>always @(*)</code> -&gt; Combinational logic (gates, no memory)</li>
+        <li><code>always @(posedge clk)</code> -&gt; Sequential logic (flip-flops, memory)</li>
+    </ul>
+
+    <p>Same-looking code, totally different hardware:</p>
+<pre><code class="language-verilog">// Combinational: just a wire path
+always @(*)
+    y = a & b;
+
+// Sequential: a flip-flop that SAMPLES a&b on the clock edge
+always @(posedge clk)
+    y <= a & b;</code></pre>
+    <p>Verilog doesn't "build a CPU" from syntax — it builds hardware from this style choice, repeated thousands of times.</p>
+
+    <h1>Build Your First Circuit</h1>
+
+    <h2>NOT Gate</h2>
+<pre><code class="language-verilog">module not_gate(
+    input a,
+    output y
+);
+
+assign y = ~a;
+endmodule</code></pre>
+    
+    <table>
+        <tr><th>A</th><th>Y</th></tr>
+        <tr><td>0</td><td>1</td></tr>
+        <tr><td>1</td><td>0</td></tr>
+    </table>
+
+    <h2>OR Gate</h2>
+<pre><code class="language-verilog">module or_gate(
+    input a,
+    input b,
+    output y
+);
+
+assign y = a | b;
+endmodule</code></pre>
+
+    <table>
+        <tr><th>A</th><th>B</th><th>Y</th></tr>
+        <tr><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>0</td><td>1</td><td>1</td></tr>
+        <tr><td>1</td><td>0</td><td>1</td></tr>
+        <tr><td>1</td><td>1</td><td>1</td></tr>
+    </table>
+
+    <h2>XOR Gate</h2>
+    <p>Super important.</p>
+<pre><code class="language-verilog">module xor_gate(
+    input a,
+    input b,
+    output y
+);
+
+assign y = a ^ b;
+endmodule</code></pre>
+    
+    <table>
+        <tr><th>A</th><th>B</th><th>Y</th></tr>
+        <tr><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>0</td><td>1</td><td>1</td></tr>
+        <tr><td>1</td><td>0</td><td>1</td></tr>
+        <tr><td>1</td><td>1</td><td>0</td></tr>
+    </table>
+    <p>Used everywhere in CPUs.</p>
+
+    <h2>Build a Half Adder</h2>
+    <p>A half adder adds two bits.</p>
+    <p>Example: <code>1 + 1 = 10</code><br>
+    Output: <code>Sum = 0, Carry = 1</code></p>
+    
+    <p><strong>Circuit:</strong><br>
+    Sum = A XOR B<br>
+    Carry = A AND B</p>
+
+<pre><code class="language-verilog">module half_adder(
+    input a,
+    input b,
+    output sum,
+    output carry
+);
+
+assign sum   = a ^ b;
+assign carry = a & b;
+
+endmodule</code></pre>
+
+    <h2>Build a Full Adder</h2>
+    <p>Now include Carry-In: <code>A + B + Cin</code></p>
+    <p>Example: <code>1 + 1 + 1 = 11</code><br>
+    Outputs: <code>Sum = 1, Carry = 1</code></p>
+
+<pre><code class="language-verilog">module full_adder(
+    input a,
+    input b,
+    input cin,
+    output sum,
+    output carry
+);
+
+assign sum = a ^ b ^ cin;
+assign carry = (a & b) | (a & cin) | (b & cin);
+
+endmodule</code></pre>
+
+    <h1>Combinational vs Sequential Logic</h1>
+    <p>This is the biggest topic.</p>
+    
+    <h3>Combinational:</h3> 
+    <p>Output depends only on current inputs. No memory.<br>
+    Example: <code>assign y = a & b;</code></p>
+    
+    <h3>Sequential:</h3> 
+    <p>Output depends on past values. Memory exists.<br>
+    Example:</p>
+<pre><code class="language-verilog">always @(posedge clk)
+begin
+    q <= d;
+end</code></pre>
+    <p>This creates a flip-flop.</p>
+
+    <h2>What Is a Flip-Flop?</h2>
+    <p>Imagine a 1-bit memory cell.</p>
+    <div class="diagram">D ---> [FF] ---> Q</div>
+    <p>At every clock edge: <code>Q = D</code></p>
+    <p>Example:<br>
+    Clock tick: <code>D = 1</code> &rarr; Tick &rarr; <code>Q</code> becomes 1<br>
+    Next tick: <code>D = 0</code> &rarr; Tick &rarr; <code>Q</code> becomes 0</p>
+
+    <h2>If Statements</h2>
+    <p>Hardware can make decisions.</p>
+<pre><code class="language-verilog">always @(posedge clk)
+begin
+    if(reset)
+        count <= 0;
+    else
+        count <= count + 1;
+end</code></pre>
+    <p>Meaning: IF reset pressed clear counter ELSE increment</p>
+
+    <h2>Your First Register</h2>
+    <p>4-bit register:</p>
+<pre><code class="language-verilog">module register(
+    input clk,
+    input [3:0] d,
+    output reg [3:0] q
+);
+
+always @(posedge clk)
+begin
+    q <= d;
+end
+
+endmodule</code></pre>
+    <p><strong>Hardware:</strong> 4 Flip-Flops which together form a register.<br>
+    Sound familiar? That's exactly what your MIPS registers are made of.</p>
+
+    <h2>Counter Example</h2>
+    <p>Let's build something useful.</p>
+<pre><code class="language-verilog">module counter(
+    input clk,
+    output reg [3:0] count
+);
+
+always @(posedge clk)
+begin
+    count <= count + 1;
+end
+
+endmodule</code></pre>
+    <p>Clock ticks: <code>0000 0001 0010 0011 0100 ...</code><br>
+    This is one of the most common beginner circuits.</p>
+
+    <h2><code>case</code> Statements</h2>
+    <p><code>if/else</code> gets unreadable fast. This is how real ALUs and FSMs are written:</p>
+<pre><code class="language-verilog">always @(*)
+begin
+    case(opcode)
+        2'b00: result = a + b;
+        2'b01: result = a - b;
+        2'b10: result = a & b;
+        2'b11: result = a | b;
+        default: result = 0;   // ALWAYS include default
+    endcase
+end</code></pre>
+
+    <div class="diagram">
+opcode ---> [ CASE SELECT ] ---> result
+              00 01 10 11</div>
+    <p>This is exactly how you'll build your 4-bit ALU.</p>
+
+    <h2>Multiplexer (Very Important)</h2>
+    <p>A mux chooses between inputs.</p>
+    <ul>
+        <li><code>sel=0</code> &rarr; choose A</li>
+        <li><code>sel=1</code> &rarr; choose B</li>
+    </ul>
+
+<pre><code class="language-verilog">assign out = sel ? b : a;
+
+// Equivalent to:
+if(sel)
+    out = b;
+else
+    out = a;</code></pre>
+    <p>Muxes appear everywhere in CPUs.</p>
+
+    <h2>Finite State Machines (The Missing Middle Step)</h2>
+    <p>FSMs are the bridge between counters and a CPU control unit, and they have a standard 3-part template:</p>
+
+<pre><code class="language-verilog">module fsm(
+    input clk,
+    input reset,
+    input go,
+    output reg done
+);
+
+// 1. State declaration
+parameter IDLE = 2'b00, RUN = 2'b01, DONE = 2'b10;
+reg [1:0] state, next_state;
+
+// 2. Sequential block — moves state forward on the clock
+always @(posedge clk)
+begin
+    if(reset)
+        state <= IDLE;
+    else
+        state <= next_state;
+end
+
+// 3. Combinational block — decides the NEXT state
+always @(*)
+begin
+    case(state)
+        IDLE: next_state = go ? RUN : IDLE;
+        RUN:  next_state = DONE;
+        DONE: next_state = IDLE;
+        default: next_state = IDLE;
+    endcase
+end
+
+always @(*)
+    done = (state == DONE);
+
+endmodule</code></pre>
+
+    <div class="diagram">
+        go
+IDLE ────────> RUN ────────> DONE
+  ^                            │
+  └────────────────────────────┘</div>
+    <p>Every CPU control unit is an FSM built exactly this way.</p>
+
+    <h2>Parameters (Reusable, Scalable Modules)</h2>
+    <p>Your adder was hardcoded to 4 bits. Real designs never are:</p>
+
+<pre><code class="language-verilog">module adder #(parameter WIDTH = 4) (
+    input  [WIDTH-1:0] a,
+    input  [WIDTH-1:0] b,
+    output [WIDTH:0]   sum
+);
+
+assign sum = a + b;
+
+endmodule</code></pre>
+    <p>Instantiate it at any width:</p>
+<pre><code class="language-verilog">adder #(.WIDTH(8)) my_adder (.a(x), .b(y), .sum(z));</code></pre>
+    <p>This is how a "4-bit ALU" becomes a "32-bit ALU" without rewriting anything.</p>
+
+    <h2>Module Instantiation (Building OUT OF Modules)</h2>
+    <p>Everything above builds single blocks. Real design wires blocks together:</p>
+
+<pre><code class="language-verilog">module top(
+    input  [3:0] a, b,
+    output [4:0] result
+);
+
+full_adder fa0 (
+    .a(a[0]),
+    .b(b[0]),
+    .cin(1'b0),
+    .sum(result[0]),
+    .carry(c0)
+);
+
+// repeat for fa1, fa2, fa3 -> a 4-bit ripple-carry adder
+
+endmodule</code></pre>
+
+    <div class="diagram">
+a[0] b[0]      a[1] b[1]      a[2] b[2]      a[3] b[3]
+  │   │          │   │          │   │          │   │
+  ▼   ▼          ▼   ▼          ▼   ▼          ▼   ▼
+[ FA0 ]───c0──►[ FA1 ]───c1──►[ FA2 ]───c2──►[ FA3 ]
+   │              │              │              │
+ sum[0]         sum[1]         sum[2]         sum[3]</div>
+    <p>This is literally a structural description — hardware built from smaller hardware, not logic equations. You've now seen all three styles: dataflow (<code>assign</code>), behavioral (<code>always</code>), and structural (module instantiation) — structural is how full CPUs get assembled.</p>
+
+    <h2><code>generate</code> Blocks (Skip Manually Instantiating 32 Things)</h2>
+<pre><code class="language-verilog">genvar i;
+generate
+    for(i = 0; i < 4; i = i + 1)
+    begin : gen_fa
+        full_adder fa (
+            .a(a[i]), .b(b[i]), .cin(carry[i]),
+            .sum(sum[i]), .carry(carry[i+1])
+        );
+    end
+endgenerate</code></pre>
+    <p>Same ripple-carry adder as above, but scales to any WIDTH automatically. Essential once you build a register file or ALU with repeated bit-slices.</p>
+
+    <h2>Functions and Tasks</h2>
+<pre><code class="language-verilog">function [3:0] max_val;
+    input [3:0] x, y;
+    begin
+        max_val = (x > y) ? x : y;
+    end
+endfunction</code></pre>
+    <ul>
+        <li><code>function</code> -&gt; combinational, returns exactly one value, no delays</li>
+        <li><code>task</code> -&gt; can have multiple outputs, can model timing (sim only)</li>
+    </ul>
+    <p>Useful for repeated combinational logic you don't want to keep rewriting.</p>
+
+    <h2>Concatenation and Replication (Bit Manipulation You'll Need Constantly)</h2>
+<pre><code class="language-verilog">wire [7:0] byte;
+wire [3:0] hi = byte[7:4];
+wire [3:0] lo = byte[3:0];
+
+wire [7:0] rebuilt = {hi, lo};     // concatenation
+wire [7:0] all_ones = {8{1'b1}};   // replication -> 11111111</code></pre>
+    <p>You'll use this constantly for sign-extension, bus assembly, and instruction decoding (which your MIPS background will make click instantly — this is literally how you slice <code>instr[31:26]</code> for opcode).</p>
+
+    <h2>Memories (Register Files, Instruction Memory)</h2>
+<pre><code class="language-verilog">module reg_file(
+    input clk,
+    input we,
+    input [4:0] waddr, raddr1, raddr2,
+    input [31:0] wdata,
+    output [31:0] rdata1, rdata2
+);
+
+reg [31:0] regs [0:31];   // 32 registers, 32 bits each — a MIPS reg file
+
+always @(posedge clk)
+    if(we) regs[waddr] <= wdata;
+
+assign rdata1 = regs[raddr1];
+assign rdata2 = regs[raddr2];
+
+endmodule</code></pre>
+    <p>This is the actual Verilog behind "MIPS has 32 registers" — a 2D reg array.</p>
+
+    <h2>Synchronous vs Asynchronous Reset</h2>
+<pre><code class="language-verilog">// Synchronous — reset only takes effect on clock edge
+always @(posedge clk)
+    if(reset) q <= 0; else q <= d;
+
+// Asynchronous — reset takes effect IMMEDIATELY, ignores clock
+always @(posedge clk or posedge reset)
+    if(reset) q <= 0; else q <= d;</code></pre>
+    <p>Real chips almost always use one or the other deliberately — worth knowing both exist and why.</p>
+
+    <h2>What's Genuinely Simulation-Only (Won't Synthesize to Hardware)</h2>
+    <p>Since testbenches are covered elsewhere, just know these exist only in simulation and will never become a real circuit — don't accidentally lean on them in a design module:</p>
+    <ul>
+        <li><code>$display</code>, <code>$monitor</code>, <code>$time</code> -&gt; printing/debug</li>
+        <li><code>#</code> delays (<code>#5 a = 1;</code>) -&gt; fake timing, sim only</li>
+        <li><code>initial</code> blocks -&gt; testbench setup, not synthesizable hardware</li>
+        <li><code>real</code>, <code>time</code> types -&gt; sim only</li>
+    </ul>
+
+    <h2>Why This Matters for Digital IC Design</h2>
+    <p>A typical learning path is:<br>
+    <em>Verilog Basics &rarr; Logic Gates &rarr; Adders &rarr; Multiplexers &rarr; Registers &rarr; Counters &rarr; Finite State Machines &rarr; ALU &rarr; Simple CPU &rarr; Pipeline CPU &rarr; ASIC/FPGA Design</em></p>
+    
+    <p>Given your background, I'd actually skip some beginner fluff and move toward building:</p>
+    <ul>
+        <li>Half Adder</li>
+        <li>Full Adder</li>
+        <li>4-bit ALU</li>
+        <li>Register File (like MIPS)</li>
+        <li>Finite State Machine</li>
+        <li>Simple single-cycle CPU</li>
+    </ul>
+    <p>That's where Verilog starts feeling less like a language and more like <em>"I am constructing a processor from the ground up."</em></p>
+
+</div>
+
+<!-- PrismJS Core and Verilog Highlight scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-verilog.min.js"></script>
+
+</body>
+</html>
